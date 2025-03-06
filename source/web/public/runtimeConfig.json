@@ -3,5 +3,7 @@
     "fileManagerApiUrl": "",
     "userPoolId": "",
     "userPoolIdClientId": "",
+    "userPoolDomain": "",
+    "federatedSignIn":  false,
     "identityPoolId": ""
 }

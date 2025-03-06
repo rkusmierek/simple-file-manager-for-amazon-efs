@@ -23,7 +23,14 @@ getRuntimeConfig().then(function(json) {
       region: json.awsRegion,
       userPoolId: json.userPoolId,
       userPoolWebClientId: json.userPoolIdClientId,
-      identityPoolId: json.identityPoolId
+      identityPoolId: json.identityPoolId,
+      oauth: {
+        domain: json.userPoolDomain,
+        scope: ['openid', 'email', 'profile'],
+        redirectSignIn: location.protocol + "//" + location.host + "/",
+        redirectSignOut: location.protocol + "//" + location.host + "/",
+        responseType: 'code',
+      },
     },
     API: {
       endpoints: [
@@ -42,6 +49,7 @@ getRuntimeConfig().then(function(json) {
     data() {
       return {
         // Distribute runtime configs into every Vue component
+        federatedSignIn: json.federatedSignIn,
         fileManagerApi: json.fileManagerApiUrl,
         awsRegion: json.awsRegion
       }

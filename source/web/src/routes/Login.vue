@@ -3,8 +3,12 @@
     <div class="container h-100">
       <div class="row h-100 justify-content-center align-items-center">
         <div class="col-md-6 text-center">
-          <amplify-authenticator
-            :authConfig="{ signInConfig: { isSignUpDisplayed: false } }"
+          <h2>Please Sign In</h2>
+          <button v-if="federatedSignIn" class="btn btn-primary" @click="signIn">
+            Sign In with Cognito
+          </button>
+          <amplify-authenticator v-else
+              :authConfig="{ signInConfig: { isSignUpDisplayed: false } }"
           />
         </div>
       </div>
@@ -13,6 +17,7 @@
 </template>
 
 <script>
+import { Auth } from "aws-amplify";
 import { AmplifyEventBus } from "aws-amplify-vue";
 export default {
   name: "Login",
@@ -32,15 +37,21 @@ export default {
     this.getLoginStatus();
   },
   methods: {
-    getLoginStatus() {
-      this.$Amplify.Auth.currentSession().then((data) => {
-        this.session = data;
-        if (this.session == null) {
-          console.log("user must login");
-        } else {
+    async signIn() {
+      await Auth.federatedSignIn();
+    },
+    async signOut() {
+      await Auth.signOut();
+    },
+    async getLoginStatus() {
+      try {
+        const user = await Auth.currentAuthenticatedUser();
+        if (user) {
           this.$router.push({ name: "home" });
         }
-      });
+      } catch (err) {
+        console.log("User must log in");
+      }
     },
   },
 };
