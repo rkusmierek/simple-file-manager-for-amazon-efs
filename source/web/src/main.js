@@ -4,6 +4,7 @@ import App from './App.vue'
 
 import Amplify, * as AmplifyModules from 'aws-amplify'
 import { AmplifyPlugin } from 'aws-amplify-vue'
+import { Auth } from "aws-amplify";
 
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -37,7 +38,18 @@ getRuntimeConfig().then(function(json) {
         {
           name: "fileManagerApi",
           endpoint: json.fileManagerApiUrl,
-          region: json.awsRegion
+          region: json.awsRegion,
+          custom_header: async () => {
+            if (json.authorization == 'Bearer') {
+              return {
+                Authorization: `Bearer ${(await Auth.currentSession())
+                    .getIdToken()
+                    .getJwtToken()}`
+              }
+            } else {
+              return {}
+            }
+          }
         }
       ]
     }
